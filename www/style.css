@@ -1,0 +1,75 @@
+/*Navbar */              
+.navbar {
+  background-color:rgb(81,36,128);
+  border-color:black;
+}
+
+/*Logo */
+.navbar-logo img {
+    position: absolute;
+    right: -1px;
+    top: 2px;
+    bottom: 1px;
+    max-width:70px;
+    max-height:70px;
+}
+
+/*The title */
+.navbar-brand {
+  float: left;
+  font-size: 25px;
+  line-height: 24px;
+  height: 50px;
+}
+
+/*Body */
+body {
+  font-family: "Source Sans Pro",Calibri,Candara,Arial,sans-serif;
+  font-size: 18px;
+  line-height: 1.42857143;
+  color:  rgb(81,36,128);
+}
+
+/*Active navbar*/
+.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
+  color: #ffffff;
+  background-color: #cf3ff7;
+}
+
+/*Active  tab*/
+.nav-tabs-custom > .nav-tabs > li.active {
+  border-top-color: #cf3ff7;
+}
+
+
+.chart-title {
+  border-bottom: 1px solid #dfdfdf;
+  font-size: 20px;
+  font-weight: 300;
+  padding: 7px 10px 4px;
+  color: rgb(81,36,128);
+  font-family: inherit;
+}
+
+.nav-tabs-custom > .nav-tabs > li > a, .nav-tabs-custom > .nav-tabs > li > a:active {
+  color: #5c5c5c;
+  font-weight: 300;
+  font-size: 20px;
+  border-radius: 0;
+  padding: 3px 10px 5px;
+  text-transform: none;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active > a, .nav-tabs-custom > .nav-tabs > li.active:hover > a {
+  background-color: #fff;
+  color: rgb(81,36,128);
+}
+
+.leaflet-popup {
+  padding: 0px;
+}
+
+
+.image-container {
+  position: relative;
+}

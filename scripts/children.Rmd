@@ -1,0 +1,201 @@
+---
+title: "Local level mapping tool - Children cautioned and court sentenced"
+output: 
+  flexdashboard::flex_dashboard:
+logo: '../images/YJB_logo.jpeg'
+orientation: rows
+css: '../www/style.css'
+vertical_layout: fill
+---
+
+```{r source_files,echo=FALSE, message=FALSE,warning=FALSE,results='hide'}
+source('packages.R')
+source('functions.R')
+source('colours_yjb.R')
+```
+
+```{r data, echo=FALSE, message=FALSE,warning=FALSE,results='hide'}
+df <- read_excel("../data/YJ_Stats_Children_Data_2021_22v2.xlsx", sheet = "Data")
+df<- df[order(df$Region, df$YOT),]
+df$Region_Rate <- round(df$Region_Rate, 1)
+df$YOT_Rate <- round(df$YOT_Rate, 1)
+
+shp<-st_read("../data/Shape/Counties_April_2019_EW_BUC/Counties_and_Unitary_Authorities__April_2019__Boundaries_EW_BUC.shp")
+shp<-merge(shp, df,by.x='CTYUA19CD',by.y='Code',all.x=TRUE)
+```
+
+```{r constants}
+tmap::tmap_mode(mode = c("view"))
+
+color_palette = 'Purples'
+colour_distribution = YJB_3
+
+```
+
+Region level {data-orientation=columns}
+=====================================  
+
+
+
+```{r,echo=FALSE, message=FALSE,warning=FALSE,results='hide'}
+```
+
+Column {data-width=900}
+-------------------------------------
+
+
+### <B>England and Wales</B>
+
+<B>Rate of children cautioned or sentenced (per 1,000) of general 10-17 population, from 1st of April 2021 to 31st March 2022.</B>
+
+<sup>Source: Bespoke analysis of the Youth Justice Application Framework (YJAF). Population is based on the 2021 mid-year population estimates (ONS) for 10-17 years old.</sup>
+
+<p style="font-size: 11px">Note: Click on any region displays the actual value</p>
+
+
+```{r,map_region ,echo=FALSE, message=FALSE, warning=FALSE, results = 'hide'}
+
+# Region
+## Note: the column name is a blank space (' ') because tmap joins names and the value without leaving a space. I tried different solutions (changing the size of the bubble, fonts - nothing delivers an acceptable result).
+
+R_shp<-shp %>% 
+  dplyr::group_by(Region) %>% 
+  dplyr::summarize(' ' = mean(Region_Rate))
+
+
+map_region = tm_shape(R_shp, show.messages = FALSE) +
+  tmap_options(check.and.fix = TRUE) +
+  tm_polygons(col = ' ' , title = "Rate ", style = "cont", palette = color_palette, contrast = 1)+
+  tm_layout(frame = FALSE,
+            legend.outside.position = "bottom",
+            legend.outside.size = 0.35,
+            legend.outside = TRUE) +
+  tm_view(set.zoom.limits = c(6, 22))
+
+
+
+
+```
+
+
+```{r,echo=FALSE, message=FALSE,warning=FALSE}
+# This avoids tmap showing information about the geography
+map_region
+```
+
+
+
+```{r,echo=FALSE, message=FALSE,warning=FALSE,results='hide'}
+```
+
+Column {data-width=500, .tabset}
+-------------------------------------
+### <B>Table</B>
+```{r,echo=FALSE, message=FALSE,warning=FALSE}
+#Children Region table
+df_region <- df[!duplicated(df$Region),]
+table_data <- subset(df_region, select = c(Region,Region_Number,Region_Pop,Region_Rate))
+table_data %>%
+  reactable( style=list(fontSize="12px"),sortable = TRUE,minRows= 10,defaultPageSize = 160,compact=TRUE,
+             columns = list(
+               Region= colDef(width = 100,filterable = TRUE),
+               Region_Number= colDef(name="Number of Children",width = 100,format = colFormat(separators = TRUE)),
+               Region_Pop= colDef(name="Population",width = 100,format = colFormat(separators = TRUE)),
+               Region_Rate= colDef(name="Rate per 1,000",width = 80,format = colFormat(separators = TRUE, digits = 1))
+             ),striped = TRUE, highlight = TRUE)
+```
+
+
+YOT level {data-orientation=columns}
+=====================================  
+
+Column {data-width=900}
+-------------------------------------
+
+### <B>England and Wales</B>
+
+
+<B>Rate of children cautioned or sentenced (per 1,000) of general 10-17 population, from 1st of April 2021 to 31st March 2022.</B>
+
+<sup>Source: Bespoke analysis of the Youth Justice Application Framework (YJAF). Population is based on the 2021 mid-year population estimates (ONS) for 10-17 years old.</sup>
+
+<p style="font-size: 11px">Note: Click on any region displays the actual value</p>
+
+```{r,map_yot, echo=FALSE, message=FALSE,warning=FALSE}
+
+# Region YOT
+## Note: the column name is a blank space (' ') because tmap joins names and the value without leaving a space. I tried different solutions (changing the size of the bubble, fonts - nothing delivers an acceptable result).
+
+Y_shp<-shp %>% 
+  dplyr::group_by(YOT) %>% 
+  dplyr::summarize(' '  = mean(YOT_Rate))
+
+
+map_yot = tm_shape(Y_shp, show.messages = FALSE) +
+  tmap_options(check.and.fix = TRUE)+
+  tm_polygons(col = ' ' , title = "Rate ", style = "cont", palette = color_palette, contrast = 1)+
+  tm_layout(frame = FALSE,
+            legend.outside.position = "bottom",
+            legend.outside.size = 0.35,
+            legend.outside = TRUE)+
+  tm_view(set.zoom.limits = c(6, 22))
+
+
+```
+
+```{r}
+map_yot
+```
+
+
+Column {data-width=500, .tabset}
+-------------------------------------
+### <B>Table</B>
+```{r, table, echo=FALSE, message=FALSE,warning=FALSE}
+#Children YOT table
+df_yot <- df[!duplicated(df$YOT),]
+table_data <- subset(df_yot,select = c(Region,YOT,YOT_Number,YOT_Pop,YOT_Rate))
+table_data %>%
+  reactable(style=list(fontSize="12px"),sortable = TRUE,minRows= 154,defaultPageSize = 160,compact=TRUE,
+             columns = list(
+               Region= colDef(width = 100,filterable = TRUE),
+               YOT= colDef(name="Youth Justice Service",width = 140,filterable = TRUE),
+               YOT_Number= colDef(name="Number of Children",width = 80,format = colFormat(separators = TRUE)),
+               YOT_Pop= colDef(name="Population",width = 80,format = colFormat(separators = TRUE)),
+               YOT_Rate= colDef(name="Rate per 1,000",width = 70,format = colFormat(separators = TRUE, digits = 1))
+             ),striped = TRUE, highlight = TRUE)
+```
+
+
+
+
+### <B>Distribution </B>
+
+
+<sup> The boxplot shows the distribution of the data from individual YOTs and skewness through displaying the data quartiles. The black line indicates the median and the orange line the mean. Dots placed past the line edges indicate outliers, data points that differs significantly from other observations (two standard deviations above the average). A more detailed explanation of boxplots can be found [here](https://chartio.com/learn/charts/box-plot-complete-guide/). For example, looking at London, the boxplot indicates a larger range of data points compared to the other regions, between 1.2 to 5.5. The left line shows the range of values up to the 25th percentile, the box shows that range of values between the 25th and the 75th percentile and the right line, data points over the 75th percentile. In this case, the median is higher than the mean, which indicates that the distribution is skweked towards smaller values. No outliers are observed in London.  </sup>
+
+
+```{r,echo=FALSE, message=FALSE,warning=FALSE,results='hide'}
+
+max_x_axis = determine_max_limit_axis(df, 'YOT_Rate')
+df$Region<- as.factor(df$Region)
+df %>%
+  ggplot(aes(y=YOT_Rate, x=Region)) + 
+  geom_boxplot(fill=colour_distribution,
+               outlier.alpha = 0.4,
+               trim = FALSE,
+               show.legend = FALSE,
+               draw_quantiles = c(0.25, 0.5, 0.75)) +
+  
+  stat_summary(fun = mean, geom = "errorbar", 
+               aes(ymax = ..y.., ymin = ..y..),
+               width = 0.8, linetype = "dashed", color = YJB_10, position = position_dodge())+
+  theme_minimal( )  +
+  coord_flip()+
+  scale_y_continuous(limits = c(0, max_x_axis), breaks = seq(0, max_x_axis, by = 1)) +
+  xlab("") +
+  ylab("Rate per 1000") 
+```
+
+
+

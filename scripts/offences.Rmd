@@ -47,7 +47,7 @@ Column {data-width=900}
 
 ### <B>England and Wales</B>
 
-<B>Rate of proven offences (per 1,000) of children aged 10 to 17 years old rom 1st of April 2021 to 31st March 2022.</B>
+<B>Rate of proven offences (per 1,000) of children aged 10 to 17 years old from 1st of April 2021 to 31st March 2022.</B>
 
 <sup>Source: Bespoke analysis of the Youth Justice Application Framework (YJAF). Population is based on the 2021 mid-year population estimates (ONS) for 10-17 years old.</sup>
 
